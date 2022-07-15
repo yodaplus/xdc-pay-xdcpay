@@ -81,7 +81,7 @@
     ]
   },
   "dependencies": {
-    "@material-ui/core": "1.0.0",
+    "@material-ui/core": "^4.12.4",
     "@zxing/library": "^0.8.0",
     "abi-decoder": "^1.0.9",
     "asmcrypto.js": "0.22.0",
@@ -156,7 +156,7 @@
     "lodash.uniqby": "^4.7.0",
     "loglevel": "^1.4.1",
     "metamascara": "^2.0.0",
-    "metamask-inpage-provider": "^1.2.2",
+    "xdcpay-wallet-inpage-provider": "https://github.com/yodaplus/xdcpay-wallet-inpage-provider.git#master",
     "mkdirp": "^0.5.1",
     "multihashes": "^0.4.12",
     "node-sass": "^4.14.1",
