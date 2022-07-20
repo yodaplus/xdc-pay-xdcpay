@@ -97,7 +97,7 @@ function conversation(result) {
   let i = 0;
   if (Object.keys(res.xdc.accounts).length > 0) {
     Object.keys(res.xdc.accounts).forEach((key) => {
-      let val = res.xdc.accounts[key];
+      const val = res.xdc.accounts[key];
       delete res.xdc.accounts[key];
       val.address = val.address.replace("0x", "xdc");
       res.xdc.accounts[key.replace("0x", "xdc")] = val;
@@ -105,7 +105,7 @@ function conversation(result) {
   }
   if (Object.keys(res.xdc.identities).length > 0) {
     Object.keys(res.xdc.identities).forEach((key) => {
-      let val = res.xdc.identities[key];
+      const val = res.xdc.identities[key];
       delete res.xdc.identities[key];
       val.address = val.address.replace("0x", "xdc");
       res.xdc.identities[key.replace("0x", "xdc")] = val;
@@ -114,7 +114,7 @@ function conversation(result) {
   i = 0;
   // if(res.xdc.keyrings.length>1){
   res.xdc.keyrings.forEach((key) => {
-    let arr = [];
+    const arr = [];
     key.accounts.forEach((k) => {
       arr[i] = k.replace("0x", "xdc");
       i++;
@@ -126,12 +126,12 @@ function conversation(result) {
   i = 0;
   if (Object.keys(res.xdc.accountTokens).length > 0) {
     Object.keys(res.xdc.accountTokens).forEach((key) => {
-      let val = res.xdc.accountTokens[key];
+      const val = res.xdc.accountTokens[key];
       delete res.xdc.accountTokens[key];
       if (Object.keys(val).length > 0) {
         Object.keys(val).forEach((k) => {
-          let valu = [];
-          let va = val[k];
+          const valu = [];
+          const va = val[k];
           if (va.length > 1) {
             va.forEach((k1) => {
               k1.address = k1.address.replace("0x", "xdc");
@@ -149,11 +149,11 @@ function conversation(result) {
   i = 0;
   if (Object.keys(res.xdc.cachedBalances).length > 0) {
     Object.keys(res.xdc.cachedBalances).forEach((key) => {
-      let val = res.xdc.cachedBalances[key];
+      const val = res.xdc.cachedBalances[key];
       delete res.xdc.cachedBalances[key];
       if (Object.keys(val).length > 0) {
         Object.keys(val).forEach((k) => {
-          let value = val[k];
+          const value = val[k];
           delete val[k];
           val[k.replace("0x", "xdc")] = value;
         });
@@ -190,7 +190,7 @@ function conversation(result) {
   }
   if (Object.keys(res.xdc.assetImages).length > 0) {
     Object.keys(res.xdc.assetImages).forEach((key) => {
-      let val = res.xdc.assetImages[key];
+      const val = res.xdc.assetImages[key];
       delete res.xdc.assetImages[key];
       res.xdc.assetImages[key.replace("0x", "xdc")] = val;
     });
@@ -205,7 +205,7 @@ function conversation(result) {
         element.txParams.from.replace("0x", "xdc");
       res.xdc.selectedAddressTxList[i].txParams.to =
         element.txParams.to.replace("0x", "xdc");
-      if (typeof res.xdc.selectedAddressTxList[i].txReceipt != "undefined") {
+      if (typeof res.xdc.selectedAddressTxList[i].txReceipt !== "undefined") {
         res.xdc.selectedAddressTxList[i].txReceipt.from =
           element.txReceipt.from.replace("0x", "xdc");
         res.xdc.selectedAddressTxList[i].txReceipt.to =
@@ -220,8 +220,9 @@ function accountSummary(acc, firstSegLength = 6, lastSegLength = 4) {
   if (!acc) return "";
   if (acc.length < 12) return acc;
   let posOfLastPart = acc.length - lastSegLength;
-  if (posOfLastPart < firstSegLength + 1)
+  if (posOfLastPart < firstSegLength + 1) {
     posOfLastPart += firstSegLength + 1 - posOfLastPart;
+  }
   return acc.slice(0, firstSegLength) + "..." + acc.slice(posOfLastPart);
 }
 
@@ -240,7 +241,7 @@ function isValidAddress(address, network) {
 }
 
 function isValidENSAddress(address) {
-  return address.match(/^.{7,}\.(eth|test)$/);
+  return address.match(/^.{7,}\.(xdc|test)$/);
 }
 
 function isInvalidChecksumAddress(address, network) {
@@ -356,10 +357,12 @@ function shortenBalance(balance, decimalsToKeep) {
   if (convertedBalance >= 1000000 && convertedBalance < 999999999) {
     truncatedValue = (parseFloat(balance) / 1000000).toFixed(decimalsToKeep);
     return `${truncatedValue}M`;
-  } else if(convertedBalance>999 && convertedBalance<10000){
-    return (parseFloat(balance)).toLocaleString('en-US', {valute: 'USD',minimumFractionDigits: decimalsToKeep});
-  }
-  else if (convertedBalance >= 10000 && convertedBalance < 999999) {
+  } else if (convertedBalance > 999 && convertedBalance < 10000) {
+    return parseFloat(balance).toLocaleString("en-US", {
+      valute: "USD",
+      minimumFractionDigits: decimalsToKeep,
+    });
+  } else if (convertedBalance >= 10000 && convertedBalance < 999999) {
     truncatedValue = (parseFloat(balance) / 1000).toFixed(decimalsToKeep);
     return `${truncatedValue}K`;
   } else if (convertedBalance >= 1000000000 && convertedBalance < 9999999999) {
@@ -376,7 +379,7 @@ function shortenBalance(balance, decimalsToKeep) {
   } else if (convertedBalance === 0) {
     return "0";
   } else if (convertedBalance < 0.0001) {
-    return "<"+convertedBalance.toFixed(decimalsToKeep).toString();
+    return "<" + convertedBalance.toFixed(decimalsToKeep).toString();
   } else if (convertedBalance < 1) {
     var stringBalance = convertedBalance.toString();
     if (stringBalance.split(".")[1].length > 9) {
@@ -445,15 +448,13 @@ function readableDate(ms) {
 function isHex(str) {
   return Boolean(str.match(/^(0x)?[0-9a-fA-F]+$/));
 }
-function ascii_to_hex(str)
-  {
-	var arr1 = [];
-	for (var n = 0, l = str.length; n < l; n ++) 
-     {
-		var hex = Number(str.charCodeAt(n)).toString(16);
-		arr1.push(hex);
-	 }
-	return arr1.join('');
+function ascii_to_hex(str) {
+  var arr1 = [];
+  for (var n = 0, l = str.length; n < l; n++) {
+    var hex = Number(str.charCodeAt(n)).toString(16);
+    arr1.push(hex);
+  }
+  return arr1.join("");
 }
 
 function exportAsFile(filename, data) {

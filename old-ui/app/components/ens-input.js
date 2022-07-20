@@ -4,6 +4,7 @@ const inherits = require("util").inherits;
 const debounce = require("debounce");
 const copyToClipboard = require("copy-to-clipboard");
 const ENS = require("ethjs-ens");
+const { resolveEthAddress } = require("xns-resolver");
 const networkMap = require("ethjs-ens/lib/network-map.json");
 const ensRE = /.+\..+$/;
 const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
@@ -120,16 +121,25 @@ EnsInput.prototype.componentDidMount = function () {
 
 EnsInput.prototype.lookupEnsName = function () {
   const recipient = document.querySelector('input[name="address"]').value;
+  console.log("🚀 ~ file: ens-input.js ~ line 123 ~ recipient", recipient);
   const { ensResolution } = this.state;
 
   log.info(`ENS attempting to resolve name: ${recipient}`);
-  this.ens
-    .lookup(recipient.trim())
+
+  resolveEthAddress(recipient.trim(), this.props.network)
     .then((address) => {
+      console.log(
+        "🚀 ~ file: ens-input.js ~ line 130 ~ .then ~ address",
+        address
+      );
       if (address === ZERO_ADDRESS) {
         throw new Error("No address has been set for this name.");
       }
       if (address !== ensResolution) {
+        console.log(
+          "🚀 ~ file: ens-input.js ~ line 134 ~ .then ~ address",
+          address
+        );
         this.setState({
           loadingEns: false,
           ensResolution: address,
