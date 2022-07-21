@@ -82,6 +82,7 @@
   },
   "dependencies": {
     "@babel/runtime": "7.0.0-beta.55",
+    "@ensdomains/content-hash": "^2.5.7",
     "@material-ui/core": "1.0.0",
     "@zxing/library": "^0.8.0",
     "abi-decoder": "^1.0.9",
