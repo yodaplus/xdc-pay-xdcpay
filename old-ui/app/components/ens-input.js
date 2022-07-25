@@ -9,9 +9,10 @@ const ensRE = /.+\..+$/
 const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 const log = require('loglevel')
 const { isValidENSAddress } = require('../util')
+const { resolveEthAddress } = require('xns-resolver')
+const connect = require('react-redux').connect
 
-
-module.exports = EnsInput
+module.exports = connect()(EnsInput)
 
 inherits(EnsInput, Component)
 function EnsInput () {
@@ -20,7 +21,7 @@ function EnsInput () {
 
 EnsInput.prototype.render = function () {
   const props = this.props
-  function shorten(b, amountL = 18, /*amountR = 4,*/ stars = 3) {
+  function shorten (b, amountL = 18, /* amountR = 4,*/ stars = 3) {
     return `${b.slice(0, amountL)}${'.'.repeat(stars)}${b.slice(
       b.length - 4,
       b.length,
@@ -29,7 +30,9 @@ EnsInput.prototype.render = function () {
 
   function onInputChange () {
     const network = this.props.network
+    console.log('🚀 ~ file: ens-input.js ~ line 32 ~ onInputChange ~ network', network)
     const networkHasEnsSupport = getNetworkEnsSupport(network)
+    console.log('🚀 ~ file: ens-input.js ~ line 34 ~ onInputChange ~ networkHasEnsSupport', networkHasEnsSupport)
     if (!networkHasEnsSupport) return
 
     const recipient = document.querySelector('input[name="address"]').value
@@ -50,7 +53,7 @@ EnsInput.prototype.render = function () {
 
   return (
     h('div', {
-      style: { 
+      style: {
         width: '265px',
         fontSize: '12px',
         fontFamily: 'Inter-Semibold',
@@ -64,13 +67,12 @@ EnsInput.prototype.render = function () {
         name: props.name,
         placeholder: props.placeholder,
         list: 'addresses',
-        autoComplete:'off',
+        autoComplete: 'off',
         onChange: onInputChange.bind(this),
       }),
       // The address book functionality.
 
-        
-        
+
       h('datalist#addresses',
       [
           // Corresponds to the addresses owned.
@@ -111,12 +113,15 @@ EnsInput.prototype.componentDidMount = function () {
 EnsInput.prototype.lookupEnsName = function () {
   const recipient = document.querySelector('input[name="address"]').value
   const { ensResolution } = this.state
+  console.log('🚀 ~ file: ens-input.js ~ line 115 ~ ensResolution', ensResolution)
 
   log.info(`ENS attempting to resolve name: ${recipient}`)
-  this.ens.lookup(recipient.trim())
+  resolveEthAddress(recipient.trim(), this.props.network)
   .then((address) => {
+    console.log('🚀 ~ file: ens-input.js ~ line 119 ~ .then ~ address', address)
     if (address === ZERO_ADDRESS) throw new Error('No address has been set for this name.')
     if (address !== ensResolution) {
+      console.log('setting ensResolution to address')
       this.setState({
         loadingEns: false,
         ensResolution: address,
@@ -150,11 +155,14 @@ EnsInput.prototype.lookupEnsName = function () {
 EnsInput.prototype.componentDidUpdate = function (prevProps, prevState) {
   const state = this.state || {}
   const ensResolution = state.ensResolution
+  console.log('🚀 ~ file: ens-input.js ~ line 158 ~ ensResolution', ensResolution)
   // If an address is sent without a nickname, meaning not from ENS or from
   // the user's own accounts, a default of a one-space string is used.
   const nickname = state.nickname || ' '
+  console.log('🚀 ~ file: ens-input.js ~ line 162 ~ nickname', nickname)
   if (prevState && ensResolution && this.props.onChange &&
       ensResolution !== prevState.ensResolution) {
+        console.log('setting toAddress to ensResolution')
     this.props.onChange({ toAddress: ensResolution, nickname, toError: state.toError, toWarning: state.toWarning })
   }
 }
@@ -198,19 +206,19 @@ EnsInput.prototype.ensIconContents = function (recipient) {
     })
   }
 
-  // if (ensResolution && (ensResolution !== ZERO_ADDRESS)) {
-  //   return h('i.fa.fa-check-circle.fa-lg.cursor-pointer', {
-  //     style: {
-  //       color: '#60db97',
-  //       background: 'white',
-  //     },
-  //     onClick: (event) => {
-  //       event.preventDefault()
-  //       event.stopPropagation()
-  //       copyToClipboard(ensResolution)
-  //     },
-  //   })
-  // }
+  if (ensResolution && (ensResolution !== ZERO_ADDRESS)) {
+    return h('i.fa.fa-check-circle.fa-lg.cursor-pointer', {
+      style: {
+        color: '#60db97',
+        background: 'white',
+      },
+      onClick: (event) => {
+        event.preventDefault()
+        event.stopPropagation()
+        copyToClipboard(ensResolution)
+      },
+    })
+  }
 }
 
 function getNetworkEnsSupport (network) {
