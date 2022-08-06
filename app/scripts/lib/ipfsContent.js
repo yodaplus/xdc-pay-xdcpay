@@ -10,7 +10,7 @@ module.exports = function (provider) {
     );
     const name = details.url.substring(8, details.url.length - 1);
     let clearTime = null;
-    if (/^.+\.xdc$/.test(name) === false) return;
+    if (/^.+\.go$/.test(name) === false) return;
 
     extension.tabs.query({ active: true }, (tab) => {
       extension.tabs.update(tab.id, { url: "loading.html" });
@@ -40,7 +40,7 @@ module.exports = function (provider) {
         })
         .catch((err) => {
           clearTimeout(clearTime);
-          const url = err === "unsupport" ? "unsupport" : "error";
+          const url = err === "unsupport" ? "unsupport" : "404";
           extension.tabs.update(tab.id, { url: `${url}.html?name=${name}` });
         });
     });
@@ -48,7 +48,7 @@ module.exports = function (provider) {
   }
 
   extension.webRequest.onErrorOccurred.addListener(ipfsContent, {
-    urls: ["*://*.xdc/"],
+    urls: ["*://*.go/"],
     types: ["main_frame"],
   });
 
