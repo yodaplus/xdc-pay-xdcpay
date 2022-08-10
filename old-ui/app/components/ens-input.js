@@ -70,6 +70,7 @@ EnsInput.prototype.render = function () {
         autoComplete: 'off',
         onChange: onInputChange.bind(this),
       }),
+
       // The address book functionality.
 
 
@@ -94,6 +95,10 @@ EnsInput.prototype.render = function () {
           }),
         ]),
       this.ensIcon(),
+    
+      this.addressPara(),
+      // show the endResult if it exists
+
     ])
     )
 }
@@ -219,6 +224,25 @@ EnsInput.prototype.ensIconContents = function (recipient) {
       },
     })
   }
+}
+
+EnsInput.prototype.addressPara = function (recipient) {
+  const { ensResolution } = this.state || { ensResolution: ZERO_ADDRESS}
+  return h('p', {
+    style: {
+      margin: '0px',
+      padding: '0px',
+      fontSize: '14px',
+      color: '#60db97',
+      background: 'white',
+      borderRadius: '3px',
+      display: 'inline-block',
+      width: 'calc(100% - 30px)',
+      overflow: 'hidden',
+      textOverflow: 'ellipsis',
+      whiteSpace: 'nowrap',
+    },
+  }, (ensResolution))
 }
 
 function getNetworkEnsSupport (network) {
