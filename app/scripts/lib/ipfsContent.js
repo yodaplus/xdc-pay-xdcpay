@@ -17,7 +17,7 @@ module.exports = function (provider) {
 
       clearTime = setTimeout(() => {
         return extension.tabs.update(tab.id, { url: "404.html" });
-      }, 60000);
+      }, 30000);
 
       resolver
         .resolve(name, provider)

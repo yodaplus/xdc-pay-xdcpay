@@ -73,9 +73,9 @@ function getProvider(type) {
 function getRegistrar(type) {
   switch (type) {
     case "xdc":
-      return "0x314159265dd8dbb310642f98f50c066173c1259b";
+      return "0x3C69E80658eeDd01B0c023f5e65dDf8516B02BeF";
     case "xdc_testnet":
-      return "0x596F02DF7513aaEb8B707971FbA8c35A2F6381E8";
+      return "0xc5e1cBf8c3900F283a04E640cDA100aAa59666Ac";
     default:
       return "0x0000000000000000000000000000000000000000";
   }
@@ -84,7 +84,7 @@ function getRegistrar(type) {
 module.exports.resolve = function (name, provider) {
   const path = name.split(".");
   const topLevelDomain = path[path.length - 1];
-  if (topLevelDomain === "xdc" || topLevelDomain === "test") {
+  if (topLevelDomain === "go" || topLevelDomain === "test") {
     return ens(name, provider);
   } else {
     return new Promise((resolve, reject) => {
