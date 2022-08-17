@@ -1,16 +1,16 @@
-const Component = require("react").Component;
-const h = require("react-hyperscript");
-const inherits = require("util").inherits;
-const debounce = require("debounce");
-const copyToClipboard = require("copy-to-clipboard");
-const ENS = require("ethjs-ens");
-const networkMap = require("ethjs-ens/lib/network-map.json");
+const Component = require('react').Component;
+const h = require('react-hyperscript');
+const inherits = require('util').inherits;
+const debounce = require('debounce');
+const copyToClipboard = require('copy-to-clipboard');
+const ENS = require('ethjs-ens');
+const networkMap = require('ethjs-ens/lib/network-map.json');
 const ensRE = /.+\..+$/;
-const ZERO_ADDRESS = "0x0000000000000000000000000000000000000000";
-const log = require("loglevel");
-const { isValidENSAddress } = require("../util");
-const { resolveEthAddress } = require("xns-resolver");
-const connect = require("react-redux").connect;
+const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000';
+const log = require('loglevel');
+const { isValidENSAddress } = require('../util');
+const { resolveEthAddress } = require('xns-resolver');
+const connect = require('react-redux').connect;
 
 module.exports = connect()(EnsInput);
 
@@ -22,7 +22,7 @@ function EnsInput() {
 EnsInput.prototype.render = function () {
   const props = this.props;
   function shorten(b, amountL = 18, /* amountR = 4,*/ stars = 3) {
-    return `${b.slice(0, amountL)}${".".repeat(stars)}${b.slice(
+    return `${b.slice(0, amountL)}${'.'.repeat(stars)}${b.slice(
       b.length - 4,
       b.length
     )}`;
@@ -30,31 +30,21 @@ EnsInput.prototype.render = function () {
 
   function onInputChange() {
     const network = this.props.network;
-    console.log(
-      "🚀 ~ file: ens-input.js ~ line 32 ~ onInputChange ~ network",
-      network
-    );
+
     const networkHasEnsSupport = getNetworkEnsSupport(network);
-    console.log(
-      "🚀 ~ file: ens-input.js ~ line 34 ~ onInputChange ~ networkHasEnsSupport",
-      networkHasEnsSupport
-    );
+
     if (!networkHasEnsSupport) return;
 
     const recipient = document.querySelector('input[name="address"]').value;
-    console.log(
-      "🚀 ~ file: ens-input.js ~ line 45 ~ onInputChange ~ recipient",
-      recipient
-    );
+
     if (recipient.match(ensRE) === null) {
-      console.log(
-        "🚀 ~ file: ens-input.js ~ line 41 ~ recipient.match(ensRE) === null"
-      );
+      
       return this.setState({
         loadingEns: false,
         ensResolution: null,
         ensFailure: null,
         toError: null,
+        hoverText: null,
       });
     }
 
@@ -65,44 +55,44 @@ EnsInput.prototype.render = function () {
   }
 
   return h(
-    "div",
+    'div',
     {
       style: {
-        width: "265px",
-        fontSize: "12px",
-        fontFamily: "Inter-Semibold",
-        lineHeight: "15px",
-        marginTop: "16px",
+        width: '265px',
+        fontSize: '12px',
+        fontFamily: 'Inter-Semibold',
+        lineHeight: '15px',
+        marginTop: '16px',
       },
     },
     [
-      "Recipient Address",
-      h("input.large-input", {
+      'Recipient Address',
+      h('input.large-input', {
         style: {
-          height: "51px",
+          height: '51px',
         },
         name: props.name,
         placeholder: props.placeholder,
-        list: "addresses",
-        autoComplete: "off",
+        list: 'addresses',
+        autoComplete: 'off',
         onChange: onInputChange.bind(this),
       }),
 
       // The address book functionality.
 
-      h("datalist#addresses", [
+      h('datalist#addresses', [
         // Corresponds to the addresses owned.
         Object.keys(props.identities).map((key) => {
           const identity = props.identities[key];
-          return h("option", {
-            value: shorten(identity.address.replace("0x", "xdc").toLowerCase()),
+          return h('option', {
+            value: shorten(identity.address.replace('0x', 'xdc').toLowerCase()),
             label: identity.name,
             key: identity.address,
           });
         }),
         // Corresponds to previously sent-to addresses.
         props.addressBook.map((identity) => {
-          return h("option", {
+          return h('option', {
             value: shorten(identity.address),
             label: identity.name,
             key: identity.address,
@@ -132,27 +122,19 @@ EnsInput.prototype.componentDidMount = function () {
 EnsInput.prototype.lookupEnsName = function () {
   const recipient = document.querySelector('input[name="address"]').value;
   const { ensResolution } = this.state;
-  console.log(
-    "🚀 ~ file: ens-input.js ~ line 115 ~ ensResolution",
-    ensResolution
-  );
-
   log.info(`ENS attempting to resolve name: ${recipient}`);
   resolveEthAddress(recipient.trim(), this.props.network)
     .then((address) => {
-      console.log(
-        "🚀 ~ file: ens-input.js ~ line 119 ~ .then ~ address",
-        address
-      );
-      if (address === ZERO_ADDRESS)
-        throw new Error("No address has been set for this name.");
+      if (address === ZERO_ADDRESS) {
+        throw new Error('No address has been set for this name.');
+      }
       if (address !== ensResolution) {
-        console.log("setting ensResolution to address");
+        console.log('setting ensResolution to address');
         this.setState({
           loadingEns: false,
           ensResolution: address,
           nickname: recipient.trim(),
-          hoverText: address + "\nClick to Copy",
+          hoverText: address + '\nClick to Copy',
           ensFailure: false,
           toError: null,
         });
@@ -167,10 +149,10 @@ EnsInput.prototype.lookupEnsName = function () {
       };
       if (
         isValidENSAddress(recipient) &&
-        reason.message === "ENS name not defined."
+        reason.message === 'ENS name not defined.'
       ) {
-        setStateObj.hoverText = "ENS name not found";
-        setStateObj.toError = "ensNameNotFound";
+        setStateObj.hoverText = 'ENS name not found';
+        setStateObj.toError = 'ensNameNotFound';
         setStateObj.ensFailure = false;
       } else {
         log.error(reason);
@@ -184,21 +166,17 @@ EnsInput.prototype.lookupEnsName = function () {
 EnsInput.prototype.componentDidUpdate = function (prevProps, prevState) {
   const state = this.state || {};
   const ensResolution = state.ensResolution;
-  console.log(
-    "🚀 ~ file: ens-input.js ~ line 158 ~ ensResolution",
-    ensResolution
-  );
+
   // If an address is sent without a nickname, meaning not from ENS or from
   // the user's own accounts, a default of a one-space string is used.
-  const nickname = state.nickname || " ";
-  console.log("🚀 ~ file: ens-input.js ~ line 162 ~ nickname", nickname);
+  const nickname = state.nickname || ' ';
   if (
     prevState &&
     ensResolution &&
     this.props.onChange &&
     ensResolution !== prevState.ensResolution
   ) {
-    console.log("setting toAddress to ensResolution");
+    console.log('setting toAddress to ensResolution');
     this.props.onChange({
       toAddress: ensResolution,
       nickname,
@@ -211,14 +189,14 @@ EnsInput.prototype.componentDidUpdate = function (prevProps, prevState) {
 EnsInput.prototype.ensIcon = function (recipient) {
   const { hoverText } = this.state || {};
   return h(
-    "span",
+    'span',
     {
       title: hoverText,
       style: {
-        position: "absolute",
-        padding: "6px 0px",
-        right: "0px",
-        transform: "translatex(-40px)",
+        position: 'absolute',
+        padding: '6px 0px',
+        right: '0px',
+        transform: 'translatex(-40px)',
       },
     },
     this.ensIconContents(recipient)
@@ -233,31 +211,31 @@ EnsInput.prototype.ensIconContents = function (recipient) {
   if (toError) return;
 
   if (loadingEns) {
-    return h("img", {
-      src: "images/loading.svg",
+    return h('img', {
+      src: 'images/loading.svg',
       style: {
-        width: "30px",
-        height: "30px",
-        transform: "translateY(-6px)",
-        marginRight: "-5px",
+        width: '30px',
+        height: '30px',
+        transform: 'translateY(-6px)',
+        marginRight: '-5px',
       },
     });
   }
 
   if (ensFailure) {
-    return h("i.fa.fa-warning.fa-lg.warning", {
+    return h('i.fa.fa-warning.fa-lg.warning', {
       style: {
-        color: "#df2265",
-        background: "white",
+        color: '#df2265',
+        background: 'white',
       },
     });
   }
 
   if (ensResolution && ensResolution !== ZERO_ADDRESS) {
-    return h("i.fa.fa-check-circle.fa-lg.cursor-pointer", {
+    return h('i.fa.fa-check-circle.fa-lg.cursor-pointer', {
       style: {
-        color: "#60db97",
-        background: "white",
+        color: '#60db97',
+        background: 'white',
       },
       onClick: (event) => {
         event.preventDefault();
@@ -270,25 +248,26 @@ EnsInput.prototype.ensIconContents = function (recipient) {
 
 EnsInput.prototype.addressPara = function () {
   const { ensResolution } = this.state || { ensResolution: ZERO_ADDRESS };
+
   function shorten(b, amountL = 18, /* amountR = 4,*/ stars = 3) {
-    return `${b.slice(0, amountL)}${".".repeat(stars)}${b.slice(
+    return `${b.slice(0, amountL)}${'.'.repeat(stars)}${b.slice(
       b.length - 4,
       b.length
     )}`;
   }
   return h(
-    "p",
+    'p',
     {
       style: {
-        marginTop: "5px",
-        display: "inline-block",
+        marginTop: '5px',
+        display: 'inline-block',
       },
     },
-    ensResolution == ZERO_ADDRESS
-      ? ""
-      : ensResolution.startsWith("0x")
-      ? shorten(ensResolution.replace("0x", "xdc").toLowerCase())
-      : "Not Found"
+    ensResolution === ZERO_ADDRESS || ensResolution === null
+      ? ''
+      : ensResolution.startsWith('0x')
+      ? shorten(ensResolution.replace('0x', 'xdc').toLowerCase())
+      : 'Not Found'
   );
 };
 
