@@ -42,7 +42,14 @@ EnsInput.prototype.render = function () {
     if (!networkHasEnsSupport) return;
 
     const recipient = document.querySelector('input[name="address"]').value;
+    console.log(
+      "🚀 ~ file: ens-input.js ~ line 45 ~ onInputChange ~ recipient",
+      recipient
+    );
     if (recipient.match(ensRE) === null) {
+      console.log(
+        "🚀 ~ file: ens-input.js ~ line 41 ~ recipient.match(ensRE) === null"
+      );
       return this.setState({
         loadingEns: false,
         ensResolution: null,
