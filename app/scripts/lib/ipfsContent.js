@@ -16,14 +16,15 @@ module.exports = function (provider) {
       extension.tabs.update(tab.id, { url: "loading.html" });
 
       clearTime = setTimeout(() => {
+        console.log("🚀 ~ file: ipfsContent.js ~ line 21 ~ clearTime");
         return extension.tabs.update(tab.id, { url: "404.html" });
-      }, 30000);
+      }, 60000);
 
       resolver
         .resolve(name, provider)
         .then((ipfsHash) => {
           clearTimeout(clearTime);
-          let url = "https://ipfs.infura.io/ipfs/" + ipfsHash;
+          let url = "https://gateway.ipfs.io/ipfs/" + ipfsHash;
           return fetch(url, { method: "HEAD" })
             .then((response) => response.status)
             .then((statusCode) => {
@@ -33,7 +34,7 @@ module.exports = function (provider) {
               extension.tabs.update(tab.id, { url: url });
             })
             .catch((err) => {
-              url = "https://ipfs.infura.io/ipfs/" + ipfsHash;
+              url = "https://gateway.ipfs.io/ipfs/" + ipfsHash;
               extension.tabs.update(tab.id, { url: url });
               return err;
             });
